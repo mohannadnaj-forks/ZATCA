@@ -73,12 +73,17 @@ class GenerateQrCode
      *
      * @return string
      */
-    public function render(array $options = [], string $file = null): string
+    public function render(array $options = [], ?string $file = null): string
     {
-        $options = new QROptions([
-            ...$options,
-            'outputType' =>  isset($options['outputType']) ? $options['outputType'] : QROutputInterface::GDIMAGE_PNG,
-        ]);
+        if (!isset($options['outputType']) && !isset($options['outputInterface'])) {
+            $options['outputType'] = QROutputInterface::GDIMAGE_PNG;
+        }
+        
+        if (!isset($options['imageTransparent'])) {
+            $options['imageTransparent'] = true;
+        }
+        
+        $options = new QROptions($options);
 
         return (new QRCode($options))->render($this->toBase64(), $file);
     }
